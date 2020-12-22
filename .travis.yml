@@ -1,0 +1,20 @@
+language: generic
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - echo "Start creating an image for wiki app"
+  - docker build -t eddiekim/golang-test-app -f ./backend/Dockerfile.dev ./backend
+  - docker build -t eddiekim/react-test-app -f ./frontend/Dockerfile.dev ./frontend
+
+script:
+  - docker run -e CI=true eddiekim/golang-test-app go test
+  - docker run -e CI=true eddiekim/react-test-app npm run test
+
+after_success:
+  - docker build -t eddiekim/production-frontend  ./
+  - docker build -t eddiekim/production-backend   ./
+  - docker build -t eddiekim/production-nginx     ./
