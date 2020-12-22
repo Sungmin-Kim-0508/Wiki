@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"strings"
 	"sync"
-
-	"github.com/wiki/backend/myutils"
 )
 
 // Wiki type
@@ -31,11 +29,9 @@ func NewWikiHandlers() *wikiHandlers {
 func (w *wikiHandlers) ArticleRoutes(res http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET":
-		splitURL := myutils.SplitURLBySlash(req.URL.String())
-		parsedURL := myutils.SliceNil(splitURL)
-		developmentURLLength := 2
-		if len(parsedURL) == developmentURLLength {
-			w.getSingleArticle(res, req)
+		name := strings.TrimPrefix(req.URL.Path, "/articles/")
+		if len(name) > 0 {
+			w.getSingleArticle(res, req, name)
 			return
 		}
 		w.getArticlesList(res, req)
@@ -73,14 +69,7 @@ func (w *wikiHandlers) getArticlesList(res http.ResponseWriter, req *http.Reques
 }
 
 // GET single article
-func (w *wikiHandlers) getSingleArticle(res http.ResponseWriter, req *http.Request) {
-	parsedURL := strings.Split(req.URL.String(), "/")
-	if len(parsedURL) != 3 {
-		res.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	name := parsedURL[2]
+func (w *wikiHandlers) getSingleArticle(res http.ResponseWriter, req *http.Request, name string) {
 	article, exists := w.store[name]
 	if exists {
 		res.Header().Add("content-type", "text/html")
