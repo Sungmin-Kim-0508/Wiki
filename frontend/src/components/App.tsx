@@ -8,11 +8,11 @@ function App() {
   return (
     <Router>
       <Switch>
+        <Route path="/edit/:name">
+          <EditArticle />
+        </Route>
         <Route path="/:name">
           <ArticleDetail />
-        </Route>
-        <Route path="/edit/:id">
-          <EditArticle />
         </Route>
         <Route path="/">
           <ArticlesList />

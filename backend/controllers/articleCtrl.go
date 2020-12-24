@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/wiki/backend/utils"
 )
 
 // Wiki type
@@ -27,9 +29,10 @@ func NewWikiHandlers() *wikiHandlers {
 }
 
 func (w *wikiHandlers) ArticleRoutes(res http.ResponseWriter, req *http.Request) {
+	baseURL := utils.GetBaseURL()
 	switch req.Method {
 	case "GET":
-		name := strings.TrimPrefix(req.URL.Path, "/articles/")
+		name := strings.TrimPrefix(req.URL.Path, baseURL+"articles/")
 		if len(name) > 0 {
 			w.getSingleArticle(res, req, name)
 			return
@@ -37,7 +40,7 @@ func (w *wikiHandlers) ArticleRoutes(res http.ResponseWriter, req *http.Request)
 		w.getArticlesList(res, req)
 		return
 	case "PUT":
-		w.editArticle(res, req)
+		w.mutateArticle(res, req)
 		return
 	default:
 		res.WriteHeader(http.StatusMethodNotAllowed)
@@ -83,13 +86,7 @@ func (w *wikiHandlers) getSingleArticle(res http.ResponseWriter, req *http.Reque
 }
 
 // PUT create or edit article
-func (w *wikiHandlers) editArticle(res http.ResponseWriter, req *http.Request) {
-	parsedURL := strings.Split(req.URL.String(), "/")
-	if len(parsedURL) != 3 {
-		res.WriteHeader(http.StatusNotFound)
-		return
-	}
-
+func (w *wikiHandlers) mutateArticle(res http.ResponseWriter, req *http.Request) {
 	bodyBytes, err := ioutil.ReadAll(req.Body)
 	defer req.Body.Close()
 	if err != nil {
@@ -98,7 +95,8 @@ func (w *wikiHandlers) editArticle(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	name := parsedURL[2]
+	baseURL := utils.GetBaseURL()
+	name := strings.TrimPrefix(req.URL.Path, baseURL+"articles/")
 	content := string(bodyBytes)
 
 	_, exists := w.store[name]
@@ -110,7 +108,7 @@ func (w *wikiHandlers) editArticle(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// Create Article
-	w.store[name] = content
 	res.WriteHeader(http.StatusCreated)
+	w.store[name] = content
 	return
 }
