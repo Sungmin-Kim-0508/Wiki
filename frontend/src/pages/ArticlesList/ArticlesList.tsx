@@ -32,9 +32,9 @@ const ArticlesList: React.FC = () => {
     getAllArticles()
   }, [])
 
-  // if (isLoading) {
-  //   return <div>Loading....</div>
-  // }
+  if (isLoading) {
+    return <div>Loading....</div>
+  }
 
   if (!isLoading && articles.length === 0) {
     return <div>No results</div>
