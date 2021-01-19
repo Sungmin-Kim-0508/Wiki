@@ -1,3 +1,5 @@
-import requests from "./requests"
+import { requests } from "./requests"
 
-export default requests
+export {
+  requests
+}

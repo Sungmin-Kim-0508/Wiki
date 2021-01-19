@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import MarkdownEditor from 'react-markdown';
 import styled from 'styled-components'
-import requests from "../../requests"
+import { requests } from "../../requests"
 import { useParams, useHistory } from 'react-router-dom'
-import { Container } from '../ArticlesList/ArticlesList';
 
 const Header = styled.div`
   display: flex;
@@ -43,16 +42,16 @@ const ArticleDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [content, setContent] = useState('')
 
-  async function getSingleArticle() {
-    setIsLoading(true)
-    const { data } = await requests.getSingleArticle(name)
-    setContent(data)
-    setIsLoading(false)
-  }
-
   useEffect(() => {
+    async function getSingleArticle() {
+      setIsLoading(true)
+      const { data } = await requests.getSingleArticle(name)
+      setContent(data)
+      setIsLoading(false)
+    }
+
     getSingleArticle()
-  }, [])
+  }, [name])
 
   const MovePageButton : React.FC<{ path: string, label: string, btnColor: string }> = ({ path, label, btnColor }) => (
     <Button onClick={() => history.push(path)} color={btnColor}>{label}</Button>
@@ -63,7 +62,7 @@ const ArticleDetail: React.FC = () => {
   }
   
   return (
-    <Container>
+    <>
       <Header>
         <Title>{name}</Title>
         <div>
@@ -72,7 +71,7 @@ const ArticleDetail: React.FC = () => {
         </div>
       </Header>
       <MarkdownEditor>{content.length > 0 ? content : "No article with this exact name found. Use Edit Button in the header to add it."}</MarkdownEditor>
-    </Container>
+    </>
   );
 }
 

@@ -3,9 +3,10 @@ import axios, { AxiosResponse } from 'axios'
 const baseURL = process.env.REACT_APP_DEV_ENV === "development" ?  "http://localhost:9090" : "http://localhost:8080/api"
 
 const requestArticleURL = `${baseURL}/articles`
-const requests = {
+
+export const requests = {
   getAllArticles: async () => {
-    return await axios.get<any, AxiosResponse<[{}]>>(baseURL + "/articles")
+    return await axios.get<any, AxiosResponse>(baseURL + "/articles")
   },
   getSingleArticle: async (name: string) => {
     const requestURL = `${requestArticleURL}/${name}`
@@ -20,5 +21,3 @@ const requests = {
     })
   }
 }
-
-export default requests
