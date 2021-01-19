@@ -7,6 +7,8 @@
 ### Run the application
 
 ```bash
+export GO_ENV=development
+
 # Run the application
 go run main.go
 
